@@ -79,7 +79,9 @@ target_include_directories(Tree-Sitter
 )
 
 
-add_library(Tree-Sitter-ags-script tree-sitter-ags-script/src/parser.c)
+add_library(Tree-Sitter-ags-script 
+  tree-sitter-ags-script/src/parser.c
+  tree-sitter-ags-script/src/parser_wrap.c)
 target_link_libraries(Tree-Sitter-ags-script INTERFACE Tree-Sitter)
 target_include_directories(Tree-Sitter-ags-script PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tree-sitter-ags-script/src>
