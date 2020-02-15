@@ -12,7 +12,7 @@ You need to have swig installed (by apt, choco or brew).
 
 Generated the swig files by running the bash script in this folder.
 
-With the swig files generated, build the libraries twice once static and later shared. Place the generated .so files in their respective directories under `generated/`
+With the swig files generated, build the libraries twice once static and later shared. Place the generated `.so`/`.dll`/`.dylib` files in their respective directories under `generated/`
 
 ## Useful references
 
