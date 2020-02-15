@@ -1,0 +1,6 @@
+[submodule "tree-sitter"]
+	path = tree-sitter
+	url = https://github.com/tree-sitter/tree-sitter
+[submodule "tree-sitter-ags-script"]
+	path = tree-sitter-ags-script
+	url = https://github.com/edmundito/tree-sitter-ags-script
