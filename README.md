@@ -6,6 +6,14 @@ for multiplatform (Windows/MacOS/Linux) using CMake.
 
 This project is largely inspired by the [python java tree sitter parser here](https://github.com/ericoporto/python-tree-sitter). The cmake parts are made with code from the [tree-sitter-cmake project here](https://github.com/Symbitic/tree-sitter-cmake), but code has been heavily updated to work with latest tree-sitter.
 
+## How to build
+
+You need to have swig installed (by apt, choco or brew).
+
+Generated the swig files by running the bash script in this folder.
+
+With the swig files generated, build the libraries twice once static and later shared. Place the generated .so files in their respective directories under `generated/`
+
 ## Useful references
 
 The readings below provide useful information.
