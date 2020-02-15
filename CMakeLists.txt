@@ -31,60 +31,49 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tree-sitter")
 endif()
 
 add_library(Tree-Sitter
-  tree-sitter/src/compiler/build_tables/lex_item.cc
-  tree-sitter/src/compiler/build_tables/lex_item_transitions.cc
-  tree-sitter/src/compiler/build_tables/lex_table_builder.cc
-  tree-sitter/src/compiler/build_tables/lookahead_set.cc
-  tree-sitter/src/compiler/build_tables/parse_item.cc
-  tree-sitter/src/compiler/build_tables/parse_item_set_builder.cc
-  tree-sitter/src/compiler/build_tables/parse_table_builder.cc
-  tree-sitter/src/compiler/build_tables/property_table_builder.cc
-  tree-sitter/src/compiler/build_tables/rule_can_be_blank.cc
-  tree-sitter/src/compiler/compile.cc
-  tree-sitter/src/compiler/generate_code/c_code.cc
-  tree-sitter/src/compiler/generate_code/property_table_json.cc
-  tree-sitter/src/compiler/lex_table.cc
-  tree-sitter/src/compiler/log.cc
-  tree-sitter/src/compiler/parse_json.cc
-  tree-sitter/src/compiler/parse_table.cc
-  tree-sitter/src/compiler/precedence_range.cc
-  tree-sitter/src/compiler/prepare_grammar/expand_repeats.cc
-  tree-sitter/src/compiler/prepare_grammar/expand_tokens.cc
-  tree-sitter/src/compiler/prepare_grammar/extract_choices.cc
-  tree-sitter/src/compiler/prepare_grammar/extract_simple_aliases.cc
-  tree-sitter/src/compiler/prepare_grammar/extract_tokens.cc
-  tree-sitter/src/compiler/prepare_grammar/flatten_grammar.cc
-  tree-sitter/src/compiler/prepare_grammar/intern_symbols.cc
-  tree-sitter/src/compiler/prepare_grammar/normalize_rules.cc
-  tree-sitter/src/compiler/prepare_grammar/parse_regex.cc
-  tree-sitter/src/compiler/prepare_grammar/prepare_grammar.cc
-  tree-sitter/src/compiler/prepare_grammar/token_description.cc
-  tree-sitter/src/compiler/rule.cc
-  tree-sitter/src/compiler/syntax_grammar.cc
-  tree-sitter/src/compiler/rules/character_set.cc
-  tree-sitter/src/compiler/rules/choice.cc
-  tree-sitter/src/compiler/rules/metadata.cc
-  tree-sitter/src/compiler/rules/repeat.cc
-  tree-sitter/src/compiler/rules/seq.cc
-  tree-sitter/src/compiler/util/string_helpers.cc
-  tree-sitter/src/runtime/get_changed_ranges.c
-  tree-sitter/src/runtime/language.c
-  tree-sitter/src/runtime/lexer.c
-  tree-sitter/src/runtime/node.c
-  tree-sitter/src/runtime/stack.c
-  tree-sitter/src/runtime/parser.c
-  tree-sitter/src/runtime/subtree.c
-  tree-sitter/src/runtime/tree.c
-  tree-sitter/src/runtime/tree_cursor.c
-  tree-sitter/src/runtime/utf16.c
+  tree-sitter/lib/src/alloc.h
+  tree-sitter/lib/src/array.h
+  tree-sitter/lib/src/atomic.h
+  tree-sitter/lib/src/bits.h
+  tree-sitter/lib/src/clock.h
+  tree-sitter/lib/src/error_costs.h
+  tree-sitter/lib/src/get_changed_ranges.c
+  tree-sitter/lib/src/get_changed_ranges.h
+  tree-sitter/lib/src/language.c
+  tree-sitter/lib/src/language.h
+  tree-sitter/lib/src/length.h
+  tree-sitter/lib/src/lexer.c
+  tree-sitter/lib/src/lexer.h
+  tree-sitter/lib/src/lib.c
+  tree-sitter/lib/src/node.c
+  tree-sitter/lib/src/parser.c
+  tree-sitter/lib/src/point.h
+  tree-sitter/lib/src/query.c
+  tree-sitter/lib/src/reduce_action.h
+  tree-sitter/lib/src/reusable_node.h
+  tree-sitter/lib/src/stack.c
+  tree-sitter/lib/src/stack.h
+  tree-sitter/lib/src/subtree.c
+  tree-sitter/lib/src/subtree.h
+  tree-sitter/lib/src/tree.c
+  tree-sitter/lib/src/tree_cursor.c
+  tree-sitter/lib/src/tree_cursor.h
+  tree-sitter/lib/src/tree.h
+  tree-sitter/lib/src/unicode.h
+  tree-sitter/lib/src/unicode/ptypes.h
+  tree-sitter/lib/src/unicode/umachine.h
+  tree-sitter/lib/src/unicode/urename.h
+  tree-sitter/lib/src/unicode/utf.h
+  tree-sitter/lib/src/unicode/utf8.h
+  tree-sitter/lib/src/unicode/utf16.h
   utf8proc/utf8proc.c
-  json-parser/json.c
+  api_wrap.c
 )
 
 target_include_directories(Tree-Sitter
   PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tree-sitter/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tree-sitter/src>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tree-sitter/lib/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tree-sitter/lib/src>
   PUBLIC
     $<INSTALL_INTERFACE:include>
 )
@@ -93,7 +82,8 @@ target_include_directories(Tree-Sitter
 add_library(Tree-Sitter-ags-script tree-sitter-ags-script/src/parser.c)
 target_link_libraries(Tree-Sitter-ags-script INTERFACE Tree-Sitter)
 target_include_directories(Tree-Sitter-ags-script PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tree-sitter/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tree-sitter-ags-script/src>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/tree-sitter/lib/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
@@ -112,9 +102,9 @@ if(NOT SUBPROJECT)
   endif()
 
   install(FILES
-    tree-sitter/include/tree_sitter/compiler.h
-    tree-sitter/include/tree_sitter/parser.h
-    tree-sitter/include/tree_sitter/runtime.h
+    tree-sitter/lib/include/tree_sitter/compiler.h
+    tree-sitter/lib/include/tree_sitter/parser.h
+    tree-sitter/lib/include/tree_sitter/runtime.h
     include/tree_sitter/langs.h
     DESTINATION include/tree_sitter
   )

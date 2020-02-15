@@ -14,8 +14,8 @@ echo "Copying necessary swig interface... "
 cp ../../parser.i ./parser.i
 echo "DONE"
 echo "Generating parser wrapper... "
-swig -csharp parser.i -outdir ../../generated/parser
+swig -csharp -outdir ../../generated/parser parser.i 
 echo "DONE"
 popd
-swig -csharp api.i -outdir generated/api
+swig -csharp -outdir generated/api api.i 
 

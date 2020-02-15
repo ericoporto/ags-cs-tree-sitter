@@ -4,3 +4,6 @@
 [submodule "tree-sitter-ags-script"]
 	path = tree-sitter-ags-script
 	url = https://github.com/edmundito/tree-sitter-ags-script
+[submodule "utf8proc"]
+	path = utf8proc
+	url = https://github.com/JuliaStrings/utf8proc
