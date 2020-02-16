@@ -12,7 +12,7 @@ trigger:
 strategy:
   matrix:
     linux:
-      imageName: 'ubuntu-16.04'
+      imageName: 'ubuntu-18.04'
     mac:
       imageName: 'macos-10.14'
     windows:
@@ -123,7 +123,7 @@ steps:
     tag: $(tagname)
     assetUploadMode: 'replace'
     action: 'edit'
-    gitHubConnection: agsconfig
+    gitHubConnection: ags-cs-tree-sitter
     repositoryName: ericoporto/ags-cs-tree-sitter
     assets: |
          $(Build.ArtifactStagingDirectory)/agsconfig*
