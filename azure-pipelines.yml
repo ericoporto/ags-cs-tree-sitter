@@ -1,0 +1,129 @@
+# C/C++ with GCC
+# Build your C/C++ project with GCC using make.
+# Add steps that publish test results, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/c-cpp/gcc
+
+trigger:
+  branches:
+    include:
+      - refs/heads/*
+      - refs/tags/*
+
+strategy:
+  matrix:
+    linux:
+      imageName: 'ubuntu-16.04'
+    mac:
+      imageName: 'macos-10.14'
+    windows:
+      imageName: 'windows-2019'
+
+pool:
+  vmImage: $(imageName)
+
+steps:
+# Linux
+- bash: |
+    sudo apt-get install -y swig
+    curl -O -L https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.tar.gz
+    tar -C /opt -xf cmake-3.16.2-Linux-x86_64.tar.gz
+    export PATH="/opt/cmake-3.16.2-Linux-x86_64/bin:${PATH}"
+    ./generate_swig_binds.sh
+    mkdir build && cd build && cmake -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_BUILD_TYPE=Release .. && make && cmake -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE=Release .. && make
+  condition: eq( variables['Agent.OS'], 'Linux' )
+  displayName: 'make'
+
+- bash: |
+    ls build/*
+    ls generated/*/*
+  condition: eq( variables['Agent.OS'], 'Linux' )
+  displayName: 'rename build'
+
+#- task: CopyFiles@2
+#  condition: eq( variables['Agent.OS'], 'Linux' )
+#  inputs:
+#    sourceFolder: '$(Build.SourcesDirectory)/build/'
+#    contents: 'agsconfig-Linux'
+#    targetFolder: $(Build.ArtifactStagingDirectory)
+
+# macOS
+- bash: |
+    brew install swig
+    curl -fLSs "https://github.com/Kitware/CMake/releases/download/v3.14.5/cmake-3.14.5-Darwin-x86_64.tar.gz" | bsdtar -f - -xvzC /Applications --strip-components 1
+    export MACOSX_DEPLOYMENT_TARGET=10.14
+    ./generate_swig_binds.sh
+    mkdir build && cd build && cmake -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_BUILD_TYPE=Release .. && make && cmake -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE=Release .. && make
+  condition: eq( variables['Agent.OS'], 'Darwin' )
+  displayName: 'make'
+
+- bash: |
+    ls build/*
+    ls generated/*/*
+  condition: eq( variables['Agent.OS'], 'Darwin' )
+  displayName: 'rename build'
+
+#- task: CopyFiles@2
+#  condition: eq( variables['Agent.OS'], 'Darwin' )
+#  inputs:
+#    sourceFolder: '$(Build.SourcesDirectory)/build/'
+#    contents: 'agsconfig-MacOS'
+#    targetFolder: $(Build.ArtifactStagingDirectory)
+
+# Windows
+- bash: |
+    choco install -y swig
+    ./generate_swig_binds.sh
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  displayName: 'prepare'
+
+- task: CMake@1
+  displayName: 'Generate agsconfig build files via cmake'
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  inputs:
+    cmakeArgs: .. -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_BUILD_TYPE=Release
+
+- task: CMake@1
+  displayName: 'build agsconfig'
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  inputs:
+    cmakeArgs: --build . --config Release
+
+- task: CMake@1
+  displayName: 'Generate agsconfig build files via cmake'
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  inputs:
+    cmakeArgs: .. -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE=Release
+
+- task: CMake@1
+  displayName: 'build agsconfig'
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  inputs:
+    cmakeArgs: --build . --config Release
+
+- bash: |
+    ls build/Release/*
+    ls generated/*/*
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  displayName: 'rename build'
+
+#- task: CopyFiles@2
+#  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+#  inputs:
+#    sourceFolder: '$(Build.SourcesDirectory)/build/Release/'
+#    contents: 'agsconfig.exe'
+#    targetFolder: $(Build.ArtifactStagingDirectory)
+
+- bash: |
+    echo "##vso[task.setvariable variable=tagname]$(git describe --tags $(git rev-list --tags --max-count=1))"
+# Upload to Github Release
+- task: GithubRelease@0
+  displayName: 'Create GitHub Release'
+  inputs:
+    tagSource: 'auto'
+    tag: $(tagname)
+    assetUploadMode: 'replace'
+    action: 'edit'
+    gitHubConnection: agsconfig
+    repositoryName: ericoporto/ags-cs-tree-sitter
+    assets: |
+         $(Build.ArtifactStagingDirectory)/agsconfig*
