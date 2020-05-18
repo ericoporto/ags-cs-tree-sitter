@@ -12,7 +12,7 @@ This project is largely inspired by the [python java tree sitter parser here](ht
 
 You need to have swig installed (by apt, choco or brew).
 
-Generated the swig files by running the bash script in this folder.
+Generate the swig files by running the bash script in this folder.
 
 With the swig files generated, build the libraries twice once static and later shared. Place the generated `.so`/`.dll`/`.dylib` files in their respective directories under `generated/`
 
